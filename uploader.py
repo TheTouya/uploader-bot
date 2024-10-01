@@ -32,7 +32,7 @@ def greeting(msg):
              }, row_width=1)
              bot.send_message(msg.from_user.id, "You have to join our sponsor channel", reply_markup=markup)
         else:
-          bot.reply(msg, "What can I do for you?")
+          bot.reply_to(msg, "What can I do for you?")
     except Exception as e:
        bot.reply_to(msg, "sorry there has been an error")
        bot.send_message(admin, f"error as {e}")
