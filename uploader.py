@@ -14,9 +14,11 @@ file_id = {}
 # use this in order to save the stats of a user
 user_stat = {}
 # if you have a sponsor channel save it here
-sponsor_channel = -1001234567
+sponsor_channel = -100
 # register admin user here in order to work properly
-admin = 123456789
+admin = 0
+# Change this to True if you wanna require the sponsor channel
+sponsor = False
 @bot.message_handler(commands=["start"])
 def greeting(msg):
     try:
@@ -25,13 +27,17 @@ def greeting(msg):
           user_stat[msg.from_user.id] = msg.text.split()[1]
           the_id = msg.text.split()[1]
           member = bot.get_chat_member(sponsor_channel, msg.from_user.id)
-          if member.status in ["member", "creator", "administrator"]:
-            bot.send_video(msg.from_user.id, file_id.get(the_id))
+          if sponsor:
+            member = bot.get_chat_member(sponsor_channel, msg.from_user.id)
+            if member.status in ["member", "creator", "administrator"]:
+               bot.send_video(msg.from_user.id, file_id.get(the_id))
+            else:
+               markup = quick_markup({
+                 "Check" :{"callback_data": "check"}
+                }, row_width=1)
+               bot.send_message(msg.from_user.id, "join the sponsor channel", reply_markup=markup)
           else:
-            markup = quick_markup({
-                "Check" :{"callback_data": "check"}
-             }, row_width=1)
-            bot.send_message(msg.from_user.id, "join the sponsor channel", reply_markup=markup)
+             bot.send_video(msg.from_user.id, file_id.get(the_id))    
     except Exception as e:
        bot.reply_to(msg, "try again later")
        bot.send_message(admin, f"error as {e}")
