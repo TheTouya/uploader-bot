@@ -2,7 +2,9 @@ import os
 import re
 import telebot
 from telebot.util import quick_markup
+# comment the script below if you dont have an .env file
 from dotenv import load_dotenv
+# comment the script below if you dont have an .env file
 load_dotenv()
 API_KEY = os.getenv("API")
 # register your bot here
