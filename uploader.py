@@ -27,6 +27,9 @@ def greeting(msg):
           user_stat[msg.from_user.id] = msg.text.split()[1]
           the_id = msg.text.split()[1]
           if sponsor:
+            #if your channel is public, the link will appear, if not put the private link in "link" variable.
+            channel = bot.get_chat(sponsor_channel)
+            link = channel.username
             member = bot.get_chat_member(sponsor_channel, msg.from_user.id)
             if member.status in ["member", "creator", "administrator"]:
                bot.send_video(msg.from_user.id, file_id.get(the_id))
@@ -34,7 +37,7 @@ def greeting(msg):
                markup = quick_markup({
                  "Check" :{"callback_data": "check"}
                 }, row_width=1)
-               bot.send_message(msg.from_user.id, "join the sponsor channel", reply_markup=markup)
+               bot.send_message(msg.from_user.id, f"join the sponsor channel {link}", reply_markup=markup)
           else:
              bot.send_video(msg.from_user.id, file_id.get(the_id))    
     except Exception as e:
@@ -77,6 +80,9 @@ def pannel(msg):
    try:
       if msg.from_user.id == admin:
          try:
+            markup = quick_markup({
+               "close ❌" : {"callback_data": "close"}
+            }, row_width=1)
             sponsor_stat = ""
             files = len(file_id)
             the_admin = bot.get_chat(admin).first_name
@@ -85,13 +91,22 @@ def pannel(msg):
                sponsor_stat = "on"
             else:
                sponsor_stat = "off"
-            phrase = f"<b>My name is {the_bot}\nMy admin is {the_admin}\nCurrently {files} are uploaded on me.\nThe sponsor is {sponsor_stat}</b>"
-            bot.send_message(admin, phrase, parse_mode="HTML")
+            phrase = f"<b>My name is {the_bot}\nMy admin is {the_admin}\nCurrently {files} videos are uploaded on me.\nThe sponsor is {sponsor_stat}</b>"
+            bot.send_message(admin, phrase, parse_mode="HTML", reply_markup=markup)
          except Exception as e:
             bot.send_messageadmin, f"there was a problem with /pannel as {e}"
       else:
          bot.reply_to(msg, "You are not allowed")
    except Exception as e:
       bot.send_message(admin, f"{e}")
+
+
+@bot.callback_query_handler(func=lambda call: call.data == "close")
+def closing(call):
+   try:
+      if call.from_user.id == admin:
+         bot.delete_message(call.from_user.id, call.message.id)
+   except Exception as e :
+      bot.send_message(admin, f"error in close callback data as {e}")
 
 bot.infinity_polling()
