@@ -26,7 +26,6 @@ def greeting(msg):
        if len(msg.text) > 1:
           user_stat[msg.from_user.id] = msg.text.split()[1]
           the_id = msg.text.split()[1]
-          member = bot.get_chat_member(sponsor_channel, msg.from_user.id)
           if sponsor:
             member = bot.get_chat_member(sponsor_channel, msg.from_user.id)
             if member.status in ["member", "creator", "administrator"]:
@@ -72,5 +71,27 @@ def checking_user(call):
    except Exception as e:
       bot.send_message(call.from_user.id, "error ocurred. Try again later.")
       bot.send_message(admin, f"Error for {call.from_user.id} to get the video as {e}")
+
+@bot.message_handler(commands=["pannel"])
+def pannel(msg):
+   try:
+      if msg.from_user.id == admin:
+         try:
+            sponsor_stat = ""
+            files = len(file_id)
+            the_admin = bot.get_chat(admin).first_name
+            the_bot = bot.get_me().first_name
+            if sponsor:
+               sponsor_stat = "on"
+            else:
+               sponsor_stat = "off"
+            phrase = f"<b>My name is {the_bot}\nMy admin is {the_admin}\nCurrently {files} are uploaded on me.\nThe sponsor is {sponsor_stat}</b>"
+            bot.send_message(admin, phrase, parse_mode="HTML")
+         except Exception as e:
+            bot.send_messageadmin, f"there was a problem with /pannel as {e}"
+      else:
+         bot.reply_to(msg, "You are not allowed")
+   except Exception as e:
+      bot.send_message(admin, f"{e}")
 
 bot.infinity_polling()
